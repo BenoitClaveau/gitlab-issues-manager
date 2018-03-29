@@ -1,0 +1,12 @@
+image: node:7.9.0
+
+stages:
+  - deploy
+
+pages:
+  stage: deploy
+  script:
+    mv issues/ public/
+  artifacts:
+    paths:
+      - public

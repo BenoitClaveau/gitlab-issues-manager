@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="IssuesManager">
+<head>
+    <title>GitLab Project Reports, Milestone Reports, Time Tracking Reports</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.css">
+    <link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons|Roboto+Condensed:400,700|Source+Sans+Pro:300,400,600,700,900'>
+    <link rel='stylesheet' href='style.css'>
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.4/angular-resource.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.4/angular-material.min.js"></script>
+    <script src="app.js"></script>
+    <script src="config.js"></script>
+    <script src="app.service.auth.js"></script>
+    <script src="app.factory.gitlab.js"></script>
+    <script src="app.controller.splash.js"></script>
+    <script src="app.controller.toolbar.js"></script>
+    <script src="app.controller.table.js"></script>
+    <script src="app.controller.filter.js"></script>
+    </head>
+<body>
+
+<div ng-controller="SplashController" id="loader">
+    <div class="loader">
+        <img src="gr-loaders.gif">
+        <p>
+            ISSUES<b>MANAGER</b></br></br>
+            <span ng-show="authRequired">Vous allez être redirigé vers <b>GitLab</b>.</span>
+        </p>
+    </div>
+</div>
+<md-content ng-cloak class="gitlab-reports-container">
+    <md-toolbar ng-controller="ToolbarController" layout="row"
+                class="md-toolbar-tools md-scroll-shrink md-whiteframe-4dp gr-header hide-print">
+        <h1 class="gr-logo">
+            <span>ISSUES<em>MANAGER</em></span>
+        </h1>
+        <div flex></div>
+        <md-button class="md-icon-button" aria-label="Logout" ng-click="logout()" ng-hide="private">
+            <md-tooltip md-direction="bottom">Déconnexion</md-tooltip>
+            <md-icon>exit_to_app</md-icon>
+        </md-button>
+        <md-button class="md-icon-button togglefilters" aria-label="Filtres" ng-click="toggleRightSidenav()">
+            <md-tooltip md-direction="bottom">Filtres</md-tooltip>
+            <md-icon>tune</md-icon>
+        </md-button>
+    </md-toolbar>
+
+    <md-content flex layout="row" id="reportresult">
+        <div class="tablecontent" ng-controller="TableController">
+            <div class="totaltimevalue">
+                <div>
+                    <div class="label">Estimation</div>
+                    <div>{{ comulative_human_time_estimate }}</div>
+                </div>
+                <div>
+                    <div class="label">Réalisé</div>
+                    <div>
+                        <span>{{ comulative_human_time_spent }}</span>
+                        <div class="bar"style="margin-left: 16px;" ng-show="comulative_percent_time_spent">
+                            <span style="width:{{ comulative_percent_time_spent }}px;">{{ comulative_percent_time_spent}}%</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="label">Reste à faire</div>
+                    <div>{{ comulative_human_time_todo }}</div>
+                </div>
+            </div>
+ 
+            <table class="res-table" id="table">
+                <thead>
+                <tr>
+                    <th ng-show="$root.table_columns.indexOf('srno') >= 0">No</th>
+                    <th ng-show="$root.table_columns.indexOf('iid') >= 0">ID</th>
+                    <th ng-show="$root.table_columns.indexOf('title') >= 0">
+                        Tâche
+                    </th>
+                    <th ng-show="$root.table_columns.indexOf('created_at') >= 0">
+                        Date
+                    </th>
+                    <th ng-show="$root.table_columns.indexOf('author') >= 0">
+                        Auteur
+                    </th>
+					<th ng-show="$root.table_columns.indexOf('assignee') >= 0" style="width:120px">
+                        Assigné
+                    </th>
+                    <th ng-show="$root.table_columns.indexOf('time_estimate') >= 0" class="timeestimtetd">
+                        Estimation
+                    </th>
+                    <th ng-show="$root.table_columns.indexOf('total_time_spent') >= 0">
+                        Réalisé
+                    </th>
+					<th ng-show="$root.table_columns.indexOf('total_time_spent') >= 0" style="width:100px">
+                        Progression
+                    </th>
+                    
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="issue in issues">
+                    <td data-th="No." ng-show="$root.table_columns.indexOf('srno') >= 0" data-title="serialno">
+                        {{ $index + 1 }}
+                    </td>
+                    <td data-th="ID" ng-show="$root.table_columns.indexOf('iid') >= 0" data-title="useriid">
+                        <a href="{{ issue.web_url }}" target="_blank">{{ issue.iid }}</a>
+                    </td>
+                    <td data-th="Title" ng-show="$root.table_columns.indexOf('title') >= 0" data-title="tasktitle">
+                        {{ issue.title }}
+                    </td>
+                    <td data-th="Date" ng-show="$root.table_columns.indexOf('created_at') >= 0"
+                        data-title="taskcreated">
+                        {{ issue.created_at | date:'yyyy-MM-dd' }}
+                    </td>
+                    <td data-th="Author" ng-show="$root.table_columns.indexOf('author') >= 0">
+                        {{ issue.author.name }}
+                    </td>
+                    <td data-th="Assignee" ng-show="$root.table_columns.indexOf('assignee') >= 0">
+                        {{ issue.assignee.name }}
+                    </td>
+                    <td data-th="Time Estimate" ng-show="$root.table_columns.indexOf('time_estimate') >= 0"
+                        ng-init="stats = getIssuesTimeStats(issue.project_id, issue.iid)" data-title="taskestimate">
+                        <span ng-hide="stats.time_estimate">A estimer</span>
+                        <span ng-show="stats.time_estimate">{{ stats.human_time_estimate }}</span>
+                    </td>
+                    <td data-th="Time Spent" ng-show="$root.table_columns.indexOf('total_time_spent') >= 0"
+                        date-title="timespent">
+                        <span ng-hide="stats.total_time_spent">0</span>
+                        <span ng-show="stats.total_time_spent">{{ stats.human_total_time_spent }}</span>
+                    </td>
+					<td data-th="Time Spent" ng-show="$root.table_columns.indexOf('total_time_spent') >= 0" date-title="progress">
+                        <div class="bar">
+                            <span style="width:{{ stats.percent_time_spent }}px;">{{ stats.percent_time_spent }}%</span>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <md-sidenav class="md-whiteframe-1dp sidenavfilter hide-print" -md-is-locked-open="$mdMedia('gt-sm')" md-is-locked-open="true"
+                    md-component-id="right">
+
+            <div class="sidespacer">
+                <h4 class="orangetext">Filtres</h4>
+                <section class="ac-container">
+                    <div class="ac-head">
+                        <input id="ac-1" name="accordion-1" type="checkbox" checked/>
+                        <div class="ac-small">
+
+                            <div layout="column">
+                                <div ng-controller="FilterController">
+                                    <div flex ng-hide="staticProject">
+                                        <md-select ng-model="project" placeholder="Projet" requried>
+                                            <md-option ng-value="p" ng-repeat="p in projects">{{ p.name }}</md-option>
+                                        </md-select>
+                                    </div>
+                                    <div flex ng-show="project_milestones.length" ng-hide="staticMilestone">
+                                        <md-select ng-model="milestone" placeholder="Milestone">
+                                            <md-option ng-value="m" ng-repeat="m in project_milestones">{{ m.title }}
+                                            </md-option>
+                                        </md-select>
+                                    </div>
+                                    <div flex ng-show="project_labels.length" ng-hide="staticLabel">
+                                        <md-select ng-model="labels" placeholder="Labels" multiple>
+                                            <md-option ng-value="l" ng-repeat="l in project_labels">{{ l.name }}
+                                            </md-option>
+                                        </md-select>
+                                    </div>
+                                    <div flex ng-show="project" ng-hide="staticProject">
+                                        <md-select ng-model="state" placeholder="Status">
+                                            <md-option value="opened">Ouvert</md-option>
+                                            <md-option value="closed">Closed</md-option>
+                                        </md-select>
+                                    </div>
+                                    <md-button class="md-raised md-primary filterbtn" ng-click="applyFilter()" aria-label="Apply Filters">
+                                        <md-icon>filter_list</md-icon>
+                                        Appliquer
+                                    </md-button>
+                                    <!-- <div flex>
+                                        <div class="clearfix">&nbsp;</div>
+                                        <h3>Columns</h3>
+                                        <md-select ng-model="$root.table_columns" placeholder="Columns" multiple>
+                                            <md-option ng-value="'srno'">Sr. No.</md-option>
+                                            <md-option ng-value="'iid'">ID</md-option>
+                                            <md-option ng-value="'title'">Title</md-option>
+                                            <md-option ng-value="'created_at'">Date</md-option>
+                                            <md-option ng-value="'author'">Author</md-option>
+                                            <md-option ng-value="'assignee'">Assignee</md-option>
+                                            <md-option ng-value="'time_estimate'">Time Estimate</md-option>
+                                            <md-option ng-value="'total_time_spent'">Time Spent</md-option>
+                                        </md-select>
+                                    </div>
+
+                                    <md-switch ng-model="$root.show_comulative_time_estimate"
+                                               aria-label="Show total time estimate">
+                                        Total Estimate Time
+                                    </md-switch>
+                                    <md-switch ng-model="$root.show_comulative_time_spent"
+                                               aria-label="Show total time spent">
+                                        Total Time Spent
+                                    </md-switch> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </md-sidenav>
+    </md-content>
+</md-content>
+
+<script src="custom.js"></script>
+</body>
+</html>
