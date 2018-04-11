@@ -9,6 +9,7 @@ function main($rootScope, $scope, gitlab, config) {
     });
 
     $scope.loadIssues = function () {
+        var params = {};
         if (config.private_token) {
             params.private_token = config.private_token;
         } else if (localStorage.getItem('access_token')) {
