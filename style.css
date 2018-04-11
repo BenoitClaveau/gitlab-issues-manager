@@ -164,6 +164,9 @@ md-input-container input {
 .tablecontent table, .tablecontent table td, .tablecontent table th {
     border-collapse: collapse;
 }
+.tablecontent table [data-th="Title"] {
+    max-width: 35em;
+}
 
 md-input-container label {
     color: #666;

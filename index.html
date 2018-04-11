@@ -135,7 +135,7 @@
                         <span ng-hide="stats.total_time_spent">0</span>
                         <span ng-show="stats.total_time_spent">{{ stats.human_total_time_spent }}</span>
                     </td>
-					<td data-th="Time Spent" ng-show="$root.table_columns.indexOf('progress') >= 0" date-title="progress">
+					<td data-th="Progress" ng-show="$root.table_columns.indexOf('progress') >= 0" date-title="progress">
                         <div class="bar">
                             <span style="width:{{ stats.percent_time_spent }}px;">{{ stats.percent_time_spent }}%</span>
                         </div>
