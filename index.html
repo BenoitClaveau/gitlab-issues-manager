@@ -96,7 +96,7 @@
                     <th ng-show="$root.table_columns.indexOf('total_time_spent') >= 0">
                         Réalisé
                     </th>
-					<th ng-show="$root.table_columns.indexOf('total_time_spent') >= 0" style="width:100px">
+					<th ng-show="$root.table_columns.indexOf('progress') >= 0" style="width:100px">
                         Progression
                     </th>
                     <th ng-show="$root.table_columns.indexOf('state') >= 0">
@@ -135,7 +135,7 @@
                         <span ng-hide="stats.total_time_spent">0</span>
                         <span ng-show="stats.total_time_spent">{{ stats.human_total_time_spent }}</span>
                     </td>
-					<td data-th="Time Spent" ng-show="$root.table_columns.indexOf('total_time_spent') >= 0" date-title="progress">
+					<td data-th="Time Spent" ng-show="$root.table_columns.indexOf('progress') >= 0" date-title="progress">
                         <div class="bar">
                             <span style="width:{{ stats.percent_time_spent }}px;">{{ stats.percent_time_spent }}%</span>
                         </div>
@@ -194,13 +194,14 @@
                                         <md-select ng-model="$root.table_columns" placeholder="Columns" multiple>
                                             <md-option ng-value="'srno'">Sr. No.</md-option>
                                             <md-option ng-value="'iid'">ID</md-option>
-                                            <md-option ng-value="'title'">Title</md-option>
+                                            <md-option ng-value="'title'">Titre</md-option>
                                             <md-option ng-value="'created_at'">Date</md-option>
-                                            <md-option ng-value="'author'">Author</md-option>
-                                            <md-option ng-value="'assignee'">Assignee</md-option>
-                                            <md-option ng-value="'time_estimate'">Time Estimate</md-option>
-                                            <md-option ng-value="'total_time_spent'">Time Spent</md-option>
-                                            <md-option ng-value="'state'">State</md-option>
+                                            <md-option ng-value="'author'">Auteur</md-option>
+                                            <md-option ng-value="'assignee'">Développeur</md-option>
+                                            <md-option ng-value="'time_estimate'">Estimation</md-option>
+                                            <md-option ng-value="'total_time_spent'">Réalisé</md-option>
+											<md-option ng-value="'progress'">Progression</md-option>
+                                            <md-option ng-value="'state'">Statut</md-option>
                                         </md-select>
                                     </div>
 
