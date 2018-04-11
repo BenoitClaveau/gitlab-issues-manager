@@ -99,7 +99,9 @@
 					<th ng-show="$root.table_columns.indexOf('total_time_spent') >= 0" style="width:100px">
                         Progression
                     </th>
-                    
+                    <th ng-show="$root.table_columns.indexOf('state') >= 0">
+                        Statut
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -137,6 +139,9 @@
                         <div class="bar">
                             <span style="width:{{ stats.percent_time_spent }}px;">{{ stats.percent_time_spent }}%</span>
                         </div>
+                    </td>
+                    <td data-th="Statut" ng-show="$root.table_columns.indexOf('state') >= 0">
+                        {{ issue.state }}
                     </td>
                 </tr>
                 </tbody>
@@ -195,6 +200,7 @@
                                             <md-option ng-value="'assignee'">Assignee</md-option>
                                             <md-option ng-value="'time_estimate'">Time Estimate</md-option>
                                             <md-option ng-value="'total_time_spent'">Time Spent</md-option>
+                                            <md-option ng-value="'state'">State</md-option>
                                         </md-select>
                                     </div>
 
