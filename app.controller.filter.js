@@ -5,7 +5,7 @@ function main($rootScope, $scope, $mdSidenav, gitlab, auth, config) {
     $scope.$watch('project', function () {
         $scope.labels = null;
         $scope.milestone = null;
-        $scope.state = null;
+        
         localStorage.removeItem('labels');
         localStorage.removeItem('milestone');
         localStorage.removeItem('state');
@@ -13,6 +13,11 @@ function main($rootScope, $scope, $mdSidenav, gitlab, auth, config) {
         if ($scope.project) {
             $scope.loadProjectLabels();
             $scope.loadProjectMilestones();
+        }
+
+        if (config.state !== null) {
+            $scope.staticState = true;
+            $scope.state = config.state;
         }
     });
 
@@ -86,7 +91,6 @@ function main($rootScope, $scope, $mdSidenav, gitlab, auth, config) {
         if (config.private_token) params.private_token = config.private_token;
         if (localStorage.getItem('access_token')) params.access_token = localStorage.getItem('access_token');
         
-
         $scope.project_milestones = gitlab.projects_milestones.query(
             params, 
             function(res) {
